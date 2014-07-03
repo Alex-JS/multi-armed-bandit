@@ -3,6 +3,8 @@
 #include <stdlib.h>
 #include <time.h> 
 #include <vector>
+#include "data_to_plot.h"
+
 
 // This is a test line.
 
