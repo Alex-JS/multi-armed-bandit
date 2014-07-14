@@ -150,20 +150,5 @@ void statistics_library::push_to_file(calc_running_means){
     /// AJ
 }
 
-// Define class, stats_lib
-//  class stats_lib{
-//     Define the vector-building function, recieve_score
-//      double recieve_score (double rwrd_val)
-//          {vector<double> pulled_rwrd
-//          pulled_rwrd.push_back(rwrd_val)
-//      } end function
-//     Define function, table-buidling function carriage_return
-//      double carriage_return (pulled_rwrd)
-//          {vector<vector<double> > stats_table [THIS IS A TABLE (VECTOR OF VECTORS)]
-//
-//      } end function
-//Define function, stats_ops
-// double stats_ops (
-
 
 #endif
