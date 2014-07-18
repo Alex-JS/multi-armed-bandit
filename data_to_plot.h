@@ -93,7 +93,7 @@ void statistics_library::calc_medians(){
     double median;
     vector <double> rows;
     
-    if(nmbr_iterations%2 == 1){ /// @AJ
+    if(nmbr_iterations%2 == 0){ /// @AJ
     for (int n=0; n<nmbr_runs; n++) { // accesses each take_value vector in the table
         rows=(master_table.at(n));
         sort(rows.begin(),rows.end()); // sorts rows into ascending order
@@ -103,7 +103,7 @@ void statistics_library::calc_medians(){
     }
     }
     
-    if(nmbr_iterations%2 == 0){
+    if(nmbr_iterations%2 == 1){
         for (int n=0; n<nmbr_runs; n++) {
         rows=(master_table.at(n));
         sort(rows.begin(),rows.end());
@@ -119,7 +119,7 @@ void statistics_library::calc_stdevs(){
     int nmbr_runs = master_table.size();
     int nmbr_iterations = master_table.at(0).size();
     
-    vector<double> means;
+    
     vector<double> stdevs_comp;
     double N;                   // defines variables and vectors for intermediate calculations
     double u;
@@ -281,7 +281,6 @@ void statistics_library::push_to_file(){
 
 void statistics_library::run_stats_library(){
     prep();
-    statistics_library::carriage_return();
     calculate_all_statistics();
     push_to_file();
     // reset();
