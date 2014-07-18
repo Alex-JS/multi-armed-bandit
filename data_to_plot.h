@@ -17,7 +17,7 @@ using namespace std;
 #include<math.h>
 #include<numeric>
 #include<functional>
-#define z 100
+
 
 class statistics_library{ // a class containing statistical member functions devloped in the code below
     /// Programmer-user functions
@@ -25,6 +25,7 @@ public:
     void carriage_return();
     void take_value(double);
     void run_stats_library();
+    void test_stats();
     
     /// Hidden from the programmer-user
 private: 
@@ -43,8 +44,9 @@ private:
     void calc_medians();
     void calc_stdevs();
     void calc_running_means();
-    void calculate_z_episode_running_means();
+    void calculate_z_episode_running_means(int);
     void calculate_all_statistics();
+    
 
     FILE* pFile;
     void push_to_file();
@@ -71,7 +73,7 @@ void statistics_library::calc_means(){
     double mean;
     vector <double> rows;
     for (int n=0; n<nmbr_runs; n++) {
-        rows=(master_table.at(n)); // accesses each row of table (take_value vectors)
+        rows= master_table.at(n); // accesses each row of table (take_value vectors)
         for (int k=0; k<nmbr_iterations; k++){ // accesses each element of the take_value vector
             total+=rows.at(k); //sums the values in the take_value vector
         }
@@ -166,7 +168,7 @@ void statistics_library::calc_running_means(){
     /// @AJ
 }
 
-void statistics_library:: calculate_z_episode_running_means(){
+void statistics_library:: calculate_z_episode_running_means(int z=100){
     int nmbr_runs = master_table.size();
     int nmbr_iterations = master_table.at(0).size();
     int a =0;
@@ -236,6 +238,19 @@ void statistics_library::reset(){
     /// @AJ Clears all the vectors associated with this class, including the master table.
 }
 
+void statistics_library::test_stats(){
+    for (int i=0; i<30; i++) {
+        int action_value=0;
+        for (int i=0; i<1000; i++) {
+            action_value=rand() % 100;
+            take_value(action_value);
+        }
+        carriage_return();
+    }
+    run_stats_library();
+}
+
+
 void statistics_library::push_to_file(){
     /// Run function calculate_all_statistics() first.
     int nmbr_iterations = master_table.at(0).size();
@@ -263,15 +278,18 @@ void statistics_library::push_to_file(){
     /// @AJ
 }
 
-//<<<<<<< HEAD
-/*=======
+
 void statistics_library::run_stats_library(){
     prep();
-    calculate_all_statistics(n);
+    statistics_library::carriage_return();
+    calculate_all_statistics();
     push_to_file();
     // reset();
 }
->>>>>>> FETCH_HEAD*/
+
+    
+
+
 
 #endif
 

@@ -9,7 +9,6 @@
 // This is a test line.
 
 using namespace std;
-
 class armedbandit
 {
 	int max_reward;
@@ -103,8 +102,15 @@ void Qlearner::update_q()
 int main()
 {
 	srand(time(NULL));
+    statistics_library lib;
+    
+    lib.test_stats();
+    cout << "COMPLETE!!" << endl;
+    return 0;
+}
 
-	armedbandit bandit1(100), bandit2(200), bandit3(100), bandit4(150), bandit5(220);  // must have the number of different bandits = "machines" variable
+
+	/*armedbandit bandit1(100), bandit2(200), bandit3(100), bandit4(150), bandit5(220);  // must have the number of different bandits = "machines" variable
 
 	Qlearner yup;
 
@@ -130,5 +136,8 @@ int main()
 		yup.update_q();
 	}
 
-	return 0;
-}
+	
+*/
+    //return 0;
+//}
+
