@@ -36,7 +36,7 @@ private:
     vector<double> medians;
     vector<double> stdevs;
     vector<double> running_means;
-    vector<double> n_episode_running_means;
+    vector<double> z_episode_running_means;
     void prep();
     void reset();
     
@@ -135,50 +135,54 @@ void statistics_library::calc_stdevs(){
     
     vector<double> stdevs_comp;
     double N;                   // defines variables and vectors for intermediate calculations
-    double u;
+    double u=0;
     double v;
     double y;
     double sum;
     double stdevs_total;
-    vector <double> rows;
-    for (int n=0; n<nmbr_runs; n++) { // accesses each take_value vector in the table
-        rows=(master_table.at(n));
-        u=means.at(n); // accesses the mean for each run or take_value vector
-        for (int k=0; k<nmbr_iterations; k++){ // accesses each value of each take_value vector
-            v=rows.at(k);                      // calculates "mean & reward_value difference" component
+    vector <double> columns;
+    
+    for (int k=0; k<nmbr_iterations; k++){
+        for ( int n=0; n<nmbr_runs; n++)
+        {
+            columns.push_back(master_table.at(n).at(k));
+            u=means.at(n);
+            v=columns.at(n);
             y=pow(v-u,2);
-            stdevs_comp.push_back(y);            // creates a vector containing the above component
+            stdevs_comp.push_back(y);
         }
-        sum=accumulate(stdevs_comp.begin(), stdevs_comp.end(), 0); // sums the component-containing vector
-         N=1/(nmbr_iterations);
-        stdevs_total=pow(N*sum,1/2);       // caclulates the standard deviation for each run
-        stdevs.push_back(stdevs_total); // creates a vector containing standard dev. values of each run
+        sum=accumulate(stdevs_comp.begin(), stdevs_comp.end(), 0);
+        N=1/(nmbr_iterations);
+        stdevs_total=pow(N*sum,1/2);
+        stdevs.push_back(stdevs_total);
     }
+}
 
     
     // This is the url for the standard deviation formula used for this calculation:
         //www.mathsisfun.com/data/standard-deviation-formulas.html
     
-}
+
 
 void statistics_library::calc_running_means(){
     int nmbr_runs = master_table.size();
     int nmbr_iterations = master_table.at(0).size();
         double c=0;
         double running_avg;
-        vector <double> rows;
+        vector <double> columns;
         double N=0;
     
-        for (int n=0; n<nmbr_runs; n++) {
-            rows=(master_table.at(n)); // accesses each row of table (take_value vectors)
-            for (int k=0; k<nmbr_iterations; k++){ // accesses each element of the take_value vector
-                c++;
-                N+=rows.at(k);
-                running_avg=N/c; // calculates the running average for each take_value vector
-            }
-            running_means.push_back(running_avg); // creates a vector containing the running avg. of each run
+    
+    for (int k=0; k<nmbr_iterations; k++){
+        for ( int n=0; n<nmbr_runs; n++)
+        {
+            columns.push_back(master_table.at(n).at(k));
+            c++;
+            N+=columns.at(n);
+            running_avg=N/c;
         }
-    /// @AJ
+        running_means.push_back(running_avg);
+            }
 }
 
 void statistics_library:: calculate_z_episode_running_means(int z=100){
@@ -187,29 +191,35 @@ void statistics_library:: calculate_z_episode_running_means(int z=100){
     int a =0;
     double c=0;
     double running_avg=0;
-    vector <double> rows;
+    vector <double> columns;
     double N=0;
     double M=0;
     
     
-    for (int h=0; h<nmbr_runs; h++) {
-        rows=(master_table.at(h)); // accesses each row of table (take_value vectors)
-        for (int k=0; k<z; k++){ // accesses each element of the take_value vector
-            c++;
-            N+=rows.at(k);
-            running_avg=N/c; // calculates the running average for each take_value vector
+    for (int k=0; k<nmbr_iterations; k++){
+        for ( int n=0; n<nmbr_runs; n++)
+        {
+            columns.push_back(master_table.at(n).at(k));
+        }
+    
+        for (int h=0; h<z; h++){
+            for (int n=0; n<nmbr_runs; n++){
+                c++;
+                N+=columns.at(n);
+                running_avg=N/c;
             }
-        
-        
-        for (int m=z; m<nmbr_iterations; m++){
-            a=m-1;
-            M=running_avg;
-            running_avg=M-rows.at(m-1)/a+rows.at(m)/a;
-        }
-        }
-        n_episode_running_means.push_back(running_avg); // creates a vector containing the running avg. of each run
     }
-    /// @AJ
+    
+        for (int m=z; m<nmbr_iterations; m++){
+            for (int n=1; n==nmbr_runs; n++){
+                a=n-1;
+                M=running_avg;
+                running_avg=M-columns.at(n-1)/a+columns.at(n)/a;
+            }
+        }
+    z_episode_running_means.push_back(running_avg);
+        }
+}
 
 
 
@@ -219,9 +229,9 @@ void statistics_library:: calculate_z_episode_running_means(int z=100){
 void statistics_library:: calculate_all_statistics(){
     calc_means();
     calc_medians();
-    /*calc_stdevs();
+    calc_stdevs();
     calc_running_means();
-    calculate_z_episode_running_means();*/
+    calculate_z_episode_running_means();
     
     
     /// @AJ have this function execute all the other statistics functions!
@@ -285,7 +295,7 @@ void statistics_library::push_to_file(){
     }
     fprintf (pFile, "\b \b\n");
     for(int i=0; i<nmbr_iterations; i++){
-        fprintf (pFile, "%.4f\t", n_episode_running_means.at(i));
+        fprintf (pFile, "%.4f\t", z_episode_running_means.at(i));
     }
     fclose (pFile);
     /// @AJ
