@@ -71,49 +71,62 @@ void statistics_library::calc_means(){
     
     double total=0;
     double mean;
-    vector <double> rows;
-    for (int n=0; n<nmbr_runs; n++) {
-        rows= master_table.at(n); // accesses each row of table (take_value vectors)
-        for (int k=0; k<nmbr_iterations; k++){ // accesses each element of the take_value vector
-            total+=rows.at(k); //sums the values in the take_value vector
+    vector <double> columns;
+    
+    for (int k=0; k<nmbr_iterations; k++){
+        for ( int n=0; n<nmbr_runs; n++)
+        {
+            columns.push_back(master_table.at(n).at(k));
         }
-        mean=total/nmbr_iterations; //calculates the mean of
-        means.push_back(mean); // creates a vector containing the mean of each run
-        total = 0; /// @AJ
+        
+        for (int n=0; n<nmbr_runs; n++){
+            total+=columns.at(n);
+        }
+        mean=total/nmbr_runs;
+        means.push_back(mean);
     }
     
-    /// AJ
+      /// AJ
 }
 
 void statistics_library::calc_medians(){
     int nmbr_runs = master_table.size();
     int nmbr_iterations = master_table.at(0).size();
-    int x;
-    int w;
+    int x=nmbr_runs/2;
+    int w=(nmbr_runs+1)/2;
     double median;
-    vector <double> rows;
+    vector <double> columns;
     
-    if(nmbr_iterations%2 == 0){ /// @AJ
-    for (int n=0; n<nmbr_runs; n++) { // accesses each take_value vector in the table
-        rows=(master_table.at(n));
-        sort(rows.begin(),rows.end()); // sorts rows into ascending order
-        x=nmbr_iterations/2;
-        median=(rows.at(x)+rows.at(x+1))/2; // calculates the mean of the take_value vector
-        medians.push_back(median); // creates a vector containing the median value of each run
-    }
-    }
+    if(nmbr_runs%2 == 0){ /// @AJ
+        
+        for (int k=0; k<nmbr_iterations; k++){
+            for ( int n=0; n<nmbr_runs; n++)
+            {
+                columns.push_back(master_table.at(n).at(k));
+            }
+            sort(columns.begin(),columns.end());
+            median=(columns.at(x)+columns.at(x+1))/2;
+            medians.push_back(median);
+            //cout << "THIS IS A FLAG #349875" << endl;
+            }
+        }
+
     
-    if(nmbr_iterations%2 == 1){
-        for (int n=0; n<nmbr_runs; n++) {
-        rows=(master_table.at(n));
-        sort(rows.begin(),rows.end());
-        w=(nmbr_iterations+1)/2;
-        median=rows.at(w);
-        medians.push_back(median);
-        /// @AJ
+    if(nmbr_runs%2 == 1){
+        
+        for (int k=0; k<nmbr_iterations; k++){
+            for ( int n=0; n<nmbr_runs; n++)
+            {
+                columns.push_back(master_table.at(n).at(k));
+            }
+            sort(columns.begin(),columns.end());
+            median=(columns.at(w));
+            medians.push_back(median);
+        }
     }
-    }
-}
+        
+            }
+
 
 void statistics_library::calc_stdevs(){
     int nmbr_runs = master_table.size();
@@ -206,9 +219,9 @@ void statistics_library:: calculate_z_episode_running_means(int z=100){
 void statistics_library:: calculate_all_statistics(){
     calc_means();
     calc_medians();
-    calc_stdevs();
+    /*calc_stdevs();
     calc_running_means();
-    calculate_z_episode_running_means();
+    calculate_z_episode_running_means();*/
     
     
     /// @AJ have this function execute all the other statistics functions!
