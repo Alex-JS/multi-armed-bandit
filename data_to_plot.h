@@ -69,11 +69,14 @@ void statistics_library::calc_means(){
     int nmbr_runs = master_table.size();
     int nmbr_iterations = master_table.at(0).size();
     
-    double total=0;
+    double total;
     double mean;
     vector <double> columns;
     
     for (int k=0; k<nmbr_iterations; k++){
+        mean=0;
+        total=0;
+        columns.clear();
         for ( int n=0; n<nmbr_runs; n++)
         {
             columns.push_back(master_table.at(n).at(k));
@@ -100,6 +103,8 @@ void statistics_library::calc_medians(){
     if(nmbr_runs%2 == 0){ /// @AJ
         
         for (int k=0; k<nmbr_iterations; k++){
+            median=0;
+            columns.clear();
             for ( int n=0; n<nmbr_runs; n++)
             {
                 columns.push_back(master_table.at(n).at(k));
@@ -115,6 +120,8 @@ void statistics_library::calc_medians(){
     if(nmbr_runs%2 == 1){
         
         for (int k=0; k<nmbr_iterations; k++){
+            median =0;
+            columns.clear();
             for ( int n=0; n<nmbr_runs; n++)
             {
                 columns.push_back(master_table.at(n).at(k));
@@ -143,17 +150,27 @@ void statistics_library::calc_stdevs(){
     vector <double> columns;
     
     for (int k=0; k<nmbr_iterations; k++){
+        stdevs_comp.clear();
+        y=0;
+        u=0;
+        v=0;
+        sum=0;
+        N=0;
+        stdevs_total=0;
+        columns.clear();
+        u=means.at(k);
         for ( int n=0; n<nmbr_runs; n++)
         {
             columns.push_back(master_table.at(n).at(k));
-            u=means.at(n);
             v=columns.at(n);
             y=pow(v-u,2);
             stdevs_comp.push_back(y);
         }
-        sum=accumulate(stdevs_comp.begin(), stdevs_comp.end(), 0);
-        N=1/(nmbr_iterations);
-        stdevs_total=pow(N*sum,1/2);
+        sum=accumulate(stdevs_comp.begin(), stdevs_comp.end(),0);
+        cout<< sum << endl;
+        N=nmbr_runs;
+        stdevs_total=pow(sum/N,1.0/2.0);
+        cout<< stdevs_total << " " << N << endl;
         stdevs.push_back(stdevs_total);
     }
 }
@@ -174,9 +191,16 @@ void statistics_library::calc_running_means(){
     
     
     for (int k=0; k<nmbr_iterations; k++){
+        //columns.clear();
+        c=0;
+        N=0;
+        running_avg=0;
         for ( int n=0; n<nmbr_runs; n++)
         {
             columns.push_back(master_table.at(n).at(k));
+        }
+        for (int n=0; n<columns.size(); n++)
+        {
             c++;
             N+=columns.at(n);
             running_avg=N/c;
@@ -185,7 +209,7 @@ void statistics_library::calc_running_means(){
             }
 }
 
-void statistics_library:: calculate_z_episode_running_means(int z=100){
+void statistics_library:: calculate_z_episode_running_means(int z=10){
     int nmbr_runs = master_table.size();
     int nmbr_iterations = master_table.at(0).size();
     int a =0;
@@ -195,8 +219,34 @@ void statistics_library:: calculate_z_episode_running_means(int z=100){
     double N=0;
     double M=0;
     
-    
+    // calculations based off of mean calculations.
+    for(int i=0; i<means.size(); i++){
+        if(i==0){
+            z_episode_running_means.push_back(means.at(0));
+        }
+        if(0<i && i<z){
+            // running mean
+            double rm = accumulate(means.begin(),means.begin()+i,0);
+            rm/=i;
+            //cout <<accumulate(means.begin(),means.begin()+i,0) << endl;
+            //cout << rm << endl;
+            z_episode_running_means.push_back(rm);
+        }
+        if(i>=z){
+            // z-ep running mean
+            double rm = accumulate(means.begin()+i-z,means.begin()+i,0);
+            rm/=z;
+            z_episode_running_means.push_back(rm);
+        }
+    }
+    /*
     for (int k=0; k<nmbr_iterations; k++){
+        c=0;
+        N=0;
+        running_avg=0;
+        a=0;
+        M=0;
+        //columns.clear();
         for ( int n=0; n<nmbr_runs; n++)
         {
             columns.push_back(master_table.at(n).at(k));
@@ -209,8 +259,9 @@ void statistics_library:: calculate_z_episode_running_means(int z=100){
                 running_avg=N/c;
             }
     }
-    
+        
         for (int m=z; m<nmbr_iterations; m++){
+            columns.erase(columns.begin()+0,columns.begin()+nmbr_runs);
             for (int n=1; n==nmbr_runs; n++){
                 a=n-1;
                 M=running_avg;
@@ -219,6 +270,7 @@ void statistics_library:: calculate_z_episode_running_means(int z=100){
         }
     z_episode_running_means.push_back(running_avg);
         }
+    */
 }
 
 
@@ -262,10 +314,10 @@ void statistics_library::reset(){
 }
 
 void statistics_library::test_stats(){
-    for (int i=0; i<30; i++) {
-        int action_value=0;
-        for (int i=0; i<1000; i++) {
-            action_value=rand() % 100;
+    double action_value;
+    for (int i=0; i<50; i++) {
+        for (int k=0; k<20; k++) {
+            action_value = rand() % 100;
             take_value(action_value);
         }
         carriage_return();
