@@ -14,7 +14,7 @@
 
 using namespace std;
 #include <iostream>
-#include<math.h>
+#include<math.h> 
 #include<numeric>
 #include<functional>
 
@@ -167,10 +167,10 @@ void statistics_library::calc_stdevs(){
             stdevs_comp.push_back(y);
         }
         sum=accumulate(stdevs_comp.begin(), stdevs_comp.end(),0);
-        cout<< sum << endl;
+        //cout<< sum << endl;
         N=nmbr_runs;
         stdevs_total=pow(sum/N,1.0/2.0);
-        cout<< stdevs_total << " " << N << endl;
+        //cout<< stdevs_total << " " << N << endl;
         stdevs.push_back(stdevs_total);
     }
 }
@@ -315,8 +315,8 @@ void statistics_library::reset(){
 
 void statistics_library::test_stats(){
     double action_value;
-    for (int i=0; i<50; i++) {
-        for (int k=0; k<20; k++) {
+    for (int i=0; i<1000000; i++) {
+        for (int k=0; k<300; k++) {
             action_value = rand() % 100;
             take_value(action_value);
         }
